@@ -3,9 +3,9 @@ exec_prefix=@exec_prefix@
 libdir=@libdir@
 includedir=@includedir@
 
-Name: hidapi
+Name: hidapi-hotplug
 Description: C Library for USB/Bluetooth HID device access from Linux, Mac OS X, FreeBSD, and Windows.
 URL: https://github.com/libusb/hidapi
 Version: @VERSION@
-Libs: -L${libdir} -lhidapi
-Cflags: -I${includedir}/hidapi
+Libs: -L${libdir} -lhidapi-hotplug
+Cflags: -I${includedir}/hidapi-hotplug

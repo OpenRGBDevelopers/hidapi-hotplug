@@ -85,7 +85,7 @@ endif()
 set_target_properties(hidapi_libusb
     PROPERTIES
         EXPORT_NAME "libusb"
-        OUTPUT_NAME "hidapi-libusb"
+        OUTPUT_NAME "hidapi-hotplug-libusb"
         VERSION ${PROJECT_VERSION}
         SOVERSION ${PROJECT_VERSION_MAJOR}
         PUBLIC_HEADER "${HIDAPI_PUBLIC_HEADERS}"
@@ -97,11 +97,11 @@ add_library(hidapi::libusb ALIAS hidapi_libusb)
 add_library(hidapi-libusb ALIAS hidapi_libusb)
 
 if(HIDAPI_INSTALL_TARGETS)
-    install(TARGETS hidapi_libusb EXPORT hidapi
+    install(TARGETS hidapi_libusb EXPORT hidapi-hotplug
         LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}"
         ARCHIVE DESTINATION "${CMAKE_INSTALL_LIBDIR}"
-        PUBLIC_HEADER DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/hidapi"
+        PUBLIC_HEADER DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/hidapi-hotplug"
     )
 endif()
 
-hidapi_configure_pc("${PROJECT_ROOT}/pc/hidapi-libusb.pc.in")
+hidapi_configure_pc("${PROJECT_ROOT}/pc/hidapi-hotplug-libusb.pc.in")

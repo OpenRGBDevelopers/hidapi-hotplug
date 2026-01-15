@@ -22,7 +22,7 @@ if(DEFINED HIDAPI_PRINT_VERSION AND HIDAPI_PRINT_VERSION)
     message(STATUS "${HIDAPI_PRINT_VERSION}")
 endif()
 
-project(hidapi VERSION "${VERSION}" LANGUAGES C)
+project(hidapi-hotplug VERSION "${VERSION}" LANGUAGES C)
 
 # Defaults and required options
 
@@ -81,22 +81,22 @@ endif()
 
 add_library(hidapi_include INTERFACE)
 target_include_directories(hidapi_include INTERFACE
-    "$<BUILD_INTERFACE:${PROJECT_ROOT}/hidapi>"
+    "$<BUILD_INTERFACE:${PROJECT_ROOT}/hidapi-hotplug>"
 )
 if(APPLE AND CMAKE_FRAMEWORK)
     # FIXME: https://github.com/libusb/hidapi/issues/492: it is untrivial to set the include path for Framework correctly
 else()
     target_include_directories(hidapi_include INTERFACE
-        "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/hidapi>"
+        "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/hidapi-hotplug>"
     )
 endif()
 set_target_properties(hidapi_include PROPERTIES EXPORT_NAME "include")
-set(HIDAPI_PUBLIC_HEADERS "${PROJECT_ROOT}/hidapi/hidapi.h")
+set(HIDAPI_PUBLIC_HEADERS "${PROJECT_ROOT}/hidapi-hotplug/hidapi.h")
 
 add_library(hidapi::include ALIAS hidapi_include)
 
 if(HIDAPI_INSTALL_TARGETS)
-    install(TARGETS hidapi_include EXPORT hidapi)
+    install(TARGETS hidapi_include EXPORT hidapi-hotplug)
 endif()
 
 set(EXPORT_ALIAS)
@@ -179,28 +179,28 @@ else()
     endif()
 endif()
 
-add_library(hidapi::hidapi ALIAS hidapi_${EXPORT_ALIAS})
+add_library(hidapi-hotplug::hidapi-hotplug ALIAS hidapi_${EXPORT_ALIAS})
 
 if(HIDAPI_INSTALL_TARGETS)
     include(CMakePackageConfigHelpers)
     set(EXPORT_DENERATED_LOCATION "${CMAKE_BINARY_DIR}/export_generated")
-    set(EXPORT_DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/hidapi")
-    write_basic_package_version_file("${EXPORT_DENERATED_LOCATION}/hidapi-config-version.cmake"
+    set(EXPORT_DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/hidapi-hotplug")
+    write_basic_package_version_file("${EXPORT_DENERATED_LOCATION}/hidapi-hotplug-config-version.cmake"
         COMPATIBILITY SameMajorVersion
     )
-    configure_package_config_file("cmake/hidapi-config.cmake.in" "${EXPORT_DENERATED_LOCATION}/hidapi-config.cmake"
+    configure_package_config_file("cmake/hidapi-hotplug-config.cmake.in" "${EXPORT_DENERATED_LOCATION}/hidapi-hotplug-config.cmake"
         INSTALL_DESTINATION "${EXPORT_DESTINATION}"
         NO_SET_AND_CHECK_MACRO
     )
 
-    install(EXPORT hidapi
+    install(EXPORT hidapi-hotplug
         DESTINATION "${EXPORT_DESTINATION}"
-        NAMESPACE hidapi::
-        FILE "libhidapi.cmake"
+        NAMESPACE hidapi-hotplug::
+        FILE "libhidapi-hotplug.cmake"
     )
     install(FILES
-            "${EXPORT_DENERATED_LOCATION}/hidapi-config-version.cmake"
-            "${EXPORT_DENERATED_LOCATION}/hidapi-config.cmake"
+            "${EXPORT_DENERATED_LOCATION}/hidapi-hotplug-config-version.cmake"
+            "${EXPORT_DENERATED_LOCATION}/hidapi-hotplug-config.cmake"
         DESTINATION "${EXPORT_DESTINATION}"
     )
 endif()

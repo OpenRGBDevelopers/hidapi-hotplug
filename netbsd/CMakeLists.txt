@@ -13,7 +13,7 @@ target_link_libraries(hidapi_netbsd PRIVATE Threads::Threads)
 set_target_properties(hidapi_netbsd
     PROPERTIES
         EXPORT_NAME "netbsd"
-        OUTPUT_NAME "hidapi-netbsd"
+        OUTPUT_NAME "hidapi-hotplug-netbsd"
         VERSION ${PROJECT_VERSION}
         SOVERSION ${PROJECT_VERSION_MAJOR}
         PUBLIC_HEADER "${HIDAPI_PUBLIC_HEADERS}"
@@ -32,4 +32,4 @@ if(HIDAPI_INSTALL_TARGETS)
     )
 endif()
 
-hidapi_configure_pc("${PROJECT_ROOT}/pc/hidapi-netbsd.pc.in")
+hidapi_configure_pc("${PROJECT_ROOT}/pc/hidapi-hotplug-netbsd.pc.in")

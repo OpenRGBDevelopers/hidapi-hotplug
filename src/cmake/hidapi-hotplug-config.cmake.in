@@ -41,21 +41,21 @@ if(HIDAPI_NEED_EXPORT_ICONV)
   endif()
 endif()
 
-include("${CMAKE_CURRENT_LIST_DIR}/libhidapi.cmake")
+include("${CMAKE_CURRENT_LIST_DIR}/libhidapi-hotplug.cmake")
 
 set(hidapi_FOUND TRUE)
 
 foreach(_component @EXPORT_COMPONENTS@)
-  if(TARGET hidapi::${_component})
+  if(TARGET hidapi-hotplug::${_component})
     set(hidapi_${_component}_FOUND TRUE)
   endif()
 endforeach()
 
-check_required_components(hidapi)
+check_required_components(hidapi-hotplug)
 
-if(NOT TARGET hidapi::hidapi)
-  add_library(hidapi::hidapi INTERFACE IMPORTED)
-  set_target_properties(hidapi::hidapi PROPERTIES
-    INTERFACE_LINK_LIBRARIES hidapi::@EXPORT_ALIAS@
+if(NOT TARGET hidapi-hotplug::hidapi-hotplug)
+  add_library(hidapi-hotplug::hidapi-hotplug INTERFACE IMPORTED)
+  set_target_properties(hidapi-hotplug::hidapi-hotplug PROPERTIES
+    INTERFACE_LINK_LIBRARIES hidapi-hotplug::@EXPORT_ALIAS@
   )
 endif()

@@ -31,7 +31,7 @@ endif()
 unset(_build_type_index)
 #
 
-project(hidapi LANGUAGES C)
+project(hidapi-hotplug LANGUAGES C)
 
 if(APPLE)
     if(NOT CMAKE_VERSION VERSION_LESS "3.15")
