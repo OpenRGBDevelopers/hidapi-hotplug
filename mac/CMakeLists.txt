@@ -18,7 +18,7 @@ target_link_libraries(hidapi_darwin
 set_target_properties(hidapi_darwin
     PROPERTIES
         EXPORT_NAME "darwin"
-        OUTPUT_NAME "hidapi"
+        OUTPUT_NAME "hidapi-hotplug"
         VERSION ${PROJECT_VERSION}
         SOVERSION ${PROJECT_VERSION_MAJOR}
         FRAMEWORK_VERSION ${PROJECT_VERSION_MAJOR}
@@ -49,11 +49,11 @@ add_library(hidapi ALIAS hidapi_darwin)
 
 set(PUBLIC_HEADER_DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}")
 if(NOT CMAKE_FRAMEWORK)
-    set(PUBLIC_HEADER_DESTINATION "${PUBLIC_HEADER_DESTINATION}/hidapi")
+    set(PUBLIC_HEADER_DESTINATION "${PUBLIC_HEADER_DESTINATION}/hidapi-hotplug")
 endif()
 
 if(HIDAPI_INSTALL_TARGETS)
-    install(TARGETS hidapi_darwin EXPORT hidapi
+    install(TARGETS hidapi_darwin EXPORT hidapi-hotplug
         LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}"
         ARCHIVE DESTINATION "${CMAKE_INSTALL_LIBDIR}"
         FRAMEWORK DESTINATION "${CMAKE_INSTALL_LIBDIR}"
@@ -61,4 +61,4 @@ if(HIDAPI_INSTALL_TARGETS)
     )
 endif()
 
-hidapi_configure_pc("${PROJECT_ROOT}/pc/hidapi.pc.in")
+hidapi_configure_pc("${PROJECT_ROOT}/pc/hidapi-hotplug.pc.in")

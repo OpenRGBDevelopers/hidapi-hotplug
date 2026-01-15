@@ -33,7 +33,7 @@ endif()
 set_target_properties(hidapi_winapi
     PROPERTIES
         EXPORT_NAME "winapi"
-        OUTPUT_NAME "hidapi"
+        OUTPUT_NAME "hidapi-hotplug"
         VERSION ${PROJECT_VERSION}
         PUBLIC_HEADER "${HIDAPI_PUBLIC_HEADERS}"
 )
@@ -44,15 +44,15 @@ add_library(hidapi::winapi ALIAS hidapi_winapi)
 add_library(hidapi ALIAS hidapi_winapi)
 
 if(HIDAPI_INSTALL_TARGETS)
-    install(TARGETS hidapi_winapi EXPORT hidapi
+    install(TARGETS hidapi_winapi EXPORT hidapi-hotplug
         RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}"
         LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}"
         ARCHIVE DESTINATION "${CMAKE_INSTALL_LIBDIR}"
-        PUBLIC_HEADER DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/hidapi"
+        PUBLIC_HEADER DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/hidapi-hotplug"
     )
 endif()
 
-hidapi_configure_pc("${PROJECT_ROOT}/pc/hidapi.pc.in")
+hidapi_configure_pc("${PROJECT_ROOT}/pc/hidapi-hotplug.pc.in")
 
 if(HIDAPI_WITH_TESTS)
      add_subdirectory(test)

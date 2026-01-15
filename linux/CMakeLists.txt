@@ -16,7 +16,7 @@ target_link_libraries(hidapi_hidraw PRIVATE PkgConfig::libudev Threads::Threads)
 set_target_properties(hidapi_hidraw
     PROPERTIES
         EXPORT_NAME "hidraw"
-        OUTPUT_NAME "hidapi-hidraw"
+        OUTPUT_NAME "hidapi-hotplug-hidraw"
         VERSION ${PROJECT_VERSION}
         SOVERSION ${PROJECT_VERSION_MAJOR}
         PUBLIC_HEADER "${HIDAPI_PUBLIC_HEADERS}"
@@ -28,11 +28,11 @@ add_library(hidapi::hidraw ALIAS hidapi_hidraw)
 add_library(hidapi-hidraw ALIAS hidapi_hidraw)
 
 if(HIDAPI_INSTALL_TARGETS)
-    install(TARGETS hidapi_hidraw EXPORT hidapi
+    install(TARGETS hidapi_hidraw EXPORT hidapi-hotplug
         LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}"
         ARCHIVE DESTINATION "${CMAKE_INSTALL_LIBDIR}"
-        PUBLIC_HEADER DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/hidapi"
+        PUBLIC_HEADER DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/hidapi-hotplug"
     )
 endif()
 
-hidapi_configure_pc("${PROJECT_ROOT}/pc/hidapi-hidraw.pc.in")
+hidapi_configure_pc("${PROJECT_ROOT}/pc/hidapi-hotplug-hidraw.pc.in")
