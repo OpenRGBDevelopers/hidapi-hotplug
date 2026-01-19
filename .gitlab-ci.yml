@@ -1,0 +1,182 @@
+.shared_windows_runners:
+  tags:
+  - shared-windows
+  - windows
+  - windows-1809
+
+stages:
+  - build
+
+variables:
+  GIT_DEPTH: 0
+
+before_script:
+ - echo "started by ${GITLAB_USER_NAME}"
+
+#-----------------------------------------------------------#
+# OpenRGB Common Debian Build Steps                         #
+#-----------------------------------------------------------#
+.hidden_deb_script: &debian_script_steps
+  stage: build
+  image: registry.gitlab.com/openrgbdevelopers/openrgb-linux-ci-deb-builder:$TGT_DEB-$TGT_ARCH
+  tags:
+  - linux
+  - $TGT_ARCH
+  script:
+  - dpkg-architecture -l
+  - rm -f ../*.deb
+  - dpkg-buildpackage -us -B
+  - mv -v ../*.deb ./
+
+  artifacts:
+    name: "${CI_PROJECT_NAME}_Linux_${TGT_ARCH}_deb_${CI_COMMIT_SHORT_SHA}"
+    paths:
+    - libhidapi-hotplug-libusb0*.deb
+    - libhidapi-hotplug-hidraw0*.deb
+    - libhidapi-hotplug-dev*.deb
+    exclude:
+    - libhidapi-hotplug-libusb0-dbgsym*.deb
+    - libhidapi-hotplug-hidraw0-dbgsym*.deb
+    expire_in: 30 days
+
+#-----------------------------------------------------------#
+# Linux (.deb) Debian Bookworm i386 Build Target            #
+#-----------------------------------------------------------#
+"Linux i386 .deb (Debian Bookworm)":
+  variables:
+    TGT_ARCH: "i386"
+    TGT_DEB: "bookworm"
+  <<: *debian_script_steps
+
+#-----------------------------------------------------------#
+# Linux (.deb) Debian Trixie i386 Build Target              #
+#-----------------------------------------------------------#
+"Linux i386 .deb (Debian Trixie)":
+  variables:
+    TGT_ARCH: "i386"
+    TGT_DEB: "trixie"
+  <<: *debian_script_steps
+
+#-----------------------------------------------------------#
+# Linux (.deb) Debian Bookworm amd64 Build Target           #
+#-----------------------------------------------------------#
+"Linux amd64 .deb (Debian Bookworm)":
+  variables:
+    TGT_ARCH: "amd64"
+    TGT_DEB: "bookworm"
+  <<: *debian_script_steps
+
+#-----------------------------------------------------------#
+# Linux (.deb) Debian Trixie amd64 Build Target             #
+#-----------------------------------------------------------#
+"Linux amd64 .deb (Debian Trixie)":
+  variables:
+    TGT_ARCH: "amd64"
+    TGT_DEB: "trixie"
+  <<: *debian_script_steps
+
+#-----------------------------------------------------------#
+# Linux (.deb) Debian Bookworm armhf Build Target           #
+#-----------------------------------------------------------#
+"Linux armhf .deb (Debian Bookworm)":
+  variables:
+    TGT_ARCH: "armhf"
+    TGT_DEB: "bookworm"
+  <<: *debian_script_steps
+
+#-----------------------------------------------------------#
+# Linux (.deb) Debian Trixie armhf Build Target             #
+#-----------------------------------------------------------#
+"Linux armhf .deb (Debian Trixie)":
+  variables:
+    TGT_ARCH: "armhf"
+    TGT_DEB: "trixie"
+  <<: *debian_script_steps
+
+#-----------------------------------------------------------#
+# Linux (.deb) Debian Bookworm arm64 Build Target           #
+#-----------------------------------------------------------#
+"Linux arm64 .deb (Debian Bookworm)":
+  variables:
+    TGT_ARCH: "arm64"
+    TGT_DEB: "bookworm"
+  <<: *debian_script_steps
+
+#-----------------------------------------------------------#
+# Linux (.deb) Debian Trixie arm64 Build Target             #
+#-----------------------------------------------------------#
+"Linux arm64 .deb (Debian Trixie)":
+  variables:
+    TGT_ARCH: "arm64"
+    TGT_DEB: "trixie"
+  <<: *debian_script_steps
+
+#-----------------------------------------------------------#
+# Linux (.rpm, F43) 64-bit Build Target                     #
+#-----------------------------------------------------------#
+"Linux 64 F43 rpm":
+  image: fedora:43
+  stage: build
+  script:
+  - dnf install rpmdevtools dnf-plugins-core libcurl-devel qt5-qtbase-devel git -y
+  - rpmdev-setuptree
+  - cp fedora/hidapi-hotplug.spec /root/rpmbuild/SPECS
+  - cp -rp . /root/rpmbuild/SOURCES/hidapi-hotplug
+  - cd /root/rpmbuild
+  - dnf builddep SPECS/hidapi-hotplug.spec -y
+  - rpmbuild -ba SPECS/hidapi-hotplug.spec
+  - cd RPMS/x86_64/
+  - mv hidapi-hotplug*.rpm ${CI_PROJECT_DIR}/
+  - cd ${CI_PROJECT_DIR}
+
+  artifacts:
+    name: "${CI_PROJECT_NAME}_Linux_64_rpm_${CI_COMMIT_SHORT_SHA}"
+    paths:
+    - hidapi-hotplug*.rpm
+    expire_in: 30 days
+
+#-----------------------------------------------------------#
+# Windows (32-bit) Build Target                             #
+#-----------------------------------------------------------#
+"Windows 32":
+  extends:
+  - .shared_windows_runners
+  stage: build
+  script:
+  - $ErrorActionPreference = "SilentlyContinue" ; Set-MpPreference -DisableRealtimeMonitoring $true ; $ErrorActionPreference = "Stop"
+  - Push-Location "C:/Program Files (x86)/Microsoft Visual Studio/2022/BuildTools/VC/Auxiliary/Build"
+  - '& cmd.exe /C "vcvarsall.bat x86 & set" | Foreach-Object { if ($_ -match "(.*?)=(.*)") { Set-Item -force -path "Env:\$($matches[1])" -value "$($matches[2])" } }'
+  - Pop-Location
+  - mkdir build
+  - cd build
+  - cmake -G "Ninja" ..
+  - ninja
+  artifacts:
+    name: "${CI_PROJECT_NAME}_Windows_32_${CI_COMMIT_SHORT_SHA}"
+    paths:
+    - 'build\src\windows\hidapi-hotplug.dll'
+    - 'build\src\windows\hidapi-hotplug.lib'
+    expire_in: 30 days
+
+#-----------------------------------------------------------#
+# Windows (64-bit) Build Target                             #
+#-----------------------------------------------------------#
+"Windows 64":
+  extends:
+  - .shared_windows_runners
+  stage: build
+  script:
+  - $ErrorActionPreference = "SilentlyContinue" ; Set-MpPreference -DisableRealtimeMonitoring $true ; $ErrorActionPreference = "Stop"
+  - Push-Location "C:/Program Files (x86)/Microsoft Visual Studio/2022/BuildTools/VC/Auxiliary/Build"
+  - '& cmd.exe /C "vcvarsall.bat x64 & set" | Foreach-Object { if ($_ -match "(.*?)=(.*)") { Set-Item -force -path "Env:\$($matches[1])" -value "$($matches[2])" } }'
+  - Pop-Location
+  - mkdir build
+  - cd build
+  - cmake -G "Ninja" ..
+  - ninja
+  artifacts:
+    name: "${CI_PROJECT_NAME}_Windows_64_${CI_COMMIT_SHORT_SHA}"
+    paths:
+    - 'build\src\windows\hidapi-hotplug.dll'
+    - 'build\src\windows\hidapi-hotplug.lib'
+    expire_in: 30 days
